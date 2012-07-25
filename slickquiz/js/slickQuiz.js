@@ -63,69 +63,75 @@
 
                 // Loop through questions object
                 for (i in questions) {
-                    question = questions[i];
+                    if (questions.hasOwnProperty(i)) {
+                        question = questions[i];
 
-                    questionHTML = $('<li class="question" id="question' + (count - 1) + '"></li>');
-                    questionHTML.append('<div class="questionCount">Question <span class="current">' + count + '</span> of <span class="total">' + questionCount + '</span></div>');
-                    questionHTML.append('<h3>' + count + '. ' + question.q + '</h3>');
+                        questionHTML = $('<li class="question" id="question' + (count - 1) + '"></li>');
+                        questionHTML.append('<div class="questionCount">Question <span class="current">' + count + '</span> of <span class="total">' + questionCount + '</span></div>');
+                        questionHTML.append('<h3>' + count + '. ' + question.q + '</h3>');
 
-                    // Count the number of true values
-                    truths = 0;
-                    for (i in question.a) {
-                        answer = question.a[i];
-                        if (answer.correct) {
-                            truths++;
+                        // Count the number of true values
+                        truths = 0;
+                        for (i in question.a) {
+                            if (question.a.hasOwnProperty(i)) {
+                                answer = question.a[i];
+                                if (answer.correct) {
+                                    truths++;
+                                }
+                            }
+                        };
+
+                        // prepare a name for the answer inputs based on the question
+                        inputName  = 'question' + (count - 1);
+
+                        // Now let's append the answers with checkboxes or radios depending on truth count
+                        answerHTML = $('<ul class="answers"></ul>');
+
+                        answers = plugin.config.randomSort ?
+                            question.a.sort(function() { return (Math.round(Math.random())-0.5); }) :
+                            question.a;
+
+                        for (i in answers) {
+                            if (answers.hasOwnProperty(i)) {
+                                answer = answers[i];
+                                optionId = inputName + '_' + i.toString();
+
+                                // If question has >1 true answers, use checkboxes; otherwise, radios
+                                var input = '<input id="' + optionId + '" name="' + inputName
+                                    + '" type="' + (truths > 1 ? 'checkbox' : 'radio') + '" />';
+
+                                var optionLabel = '<label for="' + optionId + '">' + answer.option + '</label>';
+
+                                var answerContent = $('<li></li>')
+                                    .append(input)
+                                    .append(optionLabel);
+                                answerHTML.append(answerContent);
+                            }
+                        };
+
+                        // Append answers to question
+                        questionHTML.append(answerHTML);
+
+                        // Now let's append the correct / incorrect response messages
+                        responseHTML = $('<ul class="responses"></ul>');
+                        responseHTML.append('<li class="correct">' + question.correct + '</li>');
+                        responseHTML.append('<li class="incorrect">' + question.incorrect + '</li>');
+
+                        // Append responses to question
+                        questionHTML.append(responseHTML);
+
+                        // Appends check answer / back / next question buttons
+                        if (plugin.config.backButtonText && plugin.config.backButtonText != '') {
+                            questionHTML.append('<a href="" class="button backToQuestion">' + plugin.config.backButtonText + '</a>');
                         }
+                        questionHTML.append('<a href="" class="button nextQuestion">' + plugin.config.nextQuestionText + '</a>');
+                        questionHTML.append('<a href="" class="button checkAnswer">' + plugin.config.checkAnswerText + '</a>');
+
+                        // Append question & answers to quiz
+                        quiz.append(questionHTML);
+
+                        count++;
                     };
-
-                    // prepare a name for the answer inputs based on the question
-                    inputName  = question.q.replace(/ /g,'');
-
-                    // Now let's append the answers with checkboxes or radios depending on truth count
-                    answerHTML = $('<ul class="answers"></ul>');
-
-                    answers = plugin.config.randomSort ?
-                        question.a.sort(function() { return (Math.round(Math.random())-0.5); }) :
-                        question.a;
-
-                    for (i in answers) {
-                        answer = answers[i];
-                        optionId = inputName + i.toString();
-
-                        // If question has >1 true answers, use checkboxes; otherwise, radios
-                        var input = '<input id="' + optionId + '" name="' + inputName
-                            + '" type="' + (truths > 1 ? 'checkbox' : 'radio') + '"></input>';
-
-                        var optionLabel = '<label for="' + optionId + '">' + answer.option + '</label>';
-
-                        var answerContent = $('<li></li>')
-                            .append(input)
-                            .append(optionLabel);
-                        answerHTML.append(answerContent)
-                    };
-
-                    // Append answers to question
-                    questionHTML.append(answerHTML);
-
-                    // Now let's append the correct / incorrect response messages
-                    responseHTML = $('<ul class="responses"></ul>');
-                    responseHTML.append('<li class="correct">' + question.correct + '</li>');
-                    responseHTML.append('<li class="incorrect">' + question.incorrect + '</li>');
-
-                    // Append responses to question
-                    questionHTML.append(responseHTML);
-
-                    // Appends check answer / back / next question buttons
-                    if (plugin.config.backButtonText && plugin.config.backButtonText != '') {
-                        questionHTML.append('<a href="" class="button backToQuestion">' + plugin.config.backButtonText + '</a>');
-                    }
-                    questionHTML.append('<a href="" class="button nextQuestion">' + plugin.config.nextQuestionText + '</a>');
-                    questionHTML.append('<a href="" class="button checkAnswer">' + plugin.config.checkAnswerText + '</a>');
-
-                    // Append question & answers to quiz
-                    quiz.append(questionHTML);
-
-                    count++;
                 };
 
                 // Add the quiz content to the page
@@ -152,17 +158,19 @@
 
             // Validates the response selection(s), displays explanations & next question button
             checkAnswer: function(checkButton) {
-                questionLI   = $(checkButton).parent();
+                questionLI   = $($(checkButton).parents('li.question')[0]);
                 answerInputs = questionLI.find('input:checked');
                 answers      = questions[parseInt(questionLI.attr('id').replace(/(question)/, ''))].a;
 
                 // Collect the true answers needed for a correct response
                 trueAnswers = [];
                 for (i in answers) {
-                    answer = answers[i];
+                    if (answers.hasOwnProperty(i)) {
+                        answer = answers[i];
 
-                    if (answer.correct) {
-                        trueAnswers.push(answer.option);
+                        if (answer.correct) {
+                            trueAnswers.push(answer.option);
+                        }
                     }
                 }
 
@@ -194,10 +202,11 @@
 
             // Moves to the next question OR completes the quiz if on last question
             nextQuestion: function(nextButton) {
-                nextQuestion = $(nextButton).parent().next('.question');
+                currentQuestion = $($(nextButton).parents('li.question')[0]);
+                nextQuestion    = currentQuestion.next('.question');
 
                 if (nextQuestion.length) {
-                    $(nextButton).parent().fadeOut(300, function(){
+                    currentQuestion.fadeOut(300, function(){
                         nextQuestion.find('.backToQuestion').show().end().fadeIn(500);
                     });
                 } else {
@@ -207,7 +216,7 @@
 
             // Go back to the last question
             backToQuestion: function(backButton) {
-                questionLI = $(backButton).parent();
+                questionLI = $($(backButton).parents('li.question')[0]);
                 answers    = questionLI.find('.answers');
 
                 // Back to previous question
