@@ -18,6 +18,7 @@ To initialize your quiz:
         $('#slickQuiz').slickQuiz();
     });
 
+
 ### Available Options
 
 **`json`** (JSON Object) - your quiz JSON, pass this instead of setting quizJSON outside of the plugin (see js/slickQuiz-config.js)
@@ -28,7 +29,21 @@ To initialize your quiz:
 
 **`backButtonText`** (String) - the text to use on the back button, if left null / blank (default) - no back button will be displayed
 
-**`randomSort`** (Boolean) - whether or not to randomly sort questions and their answers, defaults to false
+**`randomSortQuestions`** (Boolean) - whether or not to randomly sort questions ONLY, defaults to false
+
+**`randomSortAnswers`** (Boolean) - whether or not to randomly sort answers ONLY, defaults to false
+
+**`randomSort`** (Boolean) - whether or not to randomly sort questions AND their answers (overrides `randomSortQuestions` and `randomSortAnswers`), defaults to false. NOTE: this will be deprecated in a future release.
+
+**`preventUnanswered`** (Boolean) - prevents submitting a question with zero answers, defaults to false
+
+**`completionResponseMessaging`** (Boolean) - Hides all correct / incorrect response messages until the quiz is completed (nextQuestion button replaces checkAnswer button), defaults to false
+
+**`disableResponseMessaging`** (Boolean) - Hides all correct / incorrect response messages (nextQuestion button replaces checkAnswer button), defaults to false
+
+#### Deprecated Options
+
+**`disableNext`** (Boolean) - prevents submitting a question with zero answers, defaults to false. You should now use `preventUnanswered` instead.
 
 
 ## Advanced Usage
