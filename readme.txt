@@ -15,7 +15,7 @@ Create and manage pretty, dynamic quizzes using the SlickQuiz jQuery plugin.
 
 Managing and creating new quizzes is simple and intuitive.
 
-* NEW: Saved user scores! (must be enabled in the options)
+* NEW: Save user scores!! (must be enabled in the options)
 * Quiz questions can have single or multiple correct responses.
 * Correct and Incorrect response messages.
 * Multiple correct / incorrect response message display formats.
